@@ -91,11 +91,11 @@ namespace ConvertLanguageTray
         {
             if (!e.Item.Enabled)
             {
-                e.TextColor = isDark ? Color.FromArgb(120, 120, 120) : Color.FromArgb(145, 145, 145);
+                e.TextColor = isDark ? Color.FromArgb(130, 130, 130) : Color.FromArgb(140, 140, 140);
             }
             else
             {
-                e.TextColor = isDark ? Color.FromArgb(240, 240, 240) : Color.FromArgb(25, 25, 25);
+                e.TextColor = isDark ? Color.FromArgb(242, 242, 242) : Color.FromArgb(28, 28, 28);
             }
             base.OnRenderItemText(e);
         }
@@ -107,7 +107,7 @@ namespace ConvertLanguageTray
 
             if (e.Item.Selected && e.Item.Enabled)
             {
-                Color hoverColor = isDark ? Color.FromArgb(50, 50, 50) : Color.FromArgb(232, 232, 232);
+                Color hoverColor = isDark ? Color.FromArgb(52, 52, 52) : Color.FromArgb(232, 232, 232);
                 Rectangle rect = new Rectangle(3, 1, e.Item.Width - 6, e.Item.Height - 2);
                 using (var brush = new SolidBrush(hoverColor))
                 using (var path = GetRoundedRectangle(rect, 4))
@@ -124,11 +124,11 @@ namespace ConvertLanguageTray
         protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
         {
             Graphics g = e.Graphics;
-            Color sepColor = isDark ? Color.FromArgb(55, 55, 55) : Color.FromArgb(225, 225, 225);
+            Color sepColor = isDark ? Color.FromArgb(52, 52, 52) : Color.FromArgb(226, 226, 226);
             int y = e.Item.Height / 2;
             using (var pen = new Pen(sepColor))
             {
-                g.DrawLine(pen, 10, y, e.Item.Width - 10, y);
+                g.DrawLine(pen, 8, y, e.Item.Width - 8, y);
             }
         }
 
@@ -157,7 +157,7 @@ namespace ConvertLanguageTray
 
         protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
         {
-            Color borderColor = isDark ? Color.FromArgb(60, 60, 60) : Color.FromArgb(210, 210, 210);
+            Color borderColor = isDark ? Color.FromArgb(58, 58, 58) : Color.FromArgb(210, 210, 210);
             using (var pen = new Pen(borderColor))
             {
                 e.Graphics.DrawRectangle(pen, 0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
@@ -193,7 +193,7 @@ namespace ConvertLanguageTray
 
         public override Color MenuBorder
         {
-            get { return isDark ? Color.FromArgb(60, 60, 60) : Color.FromArgb(215, 215, 215); }
+            get { return isDark ? Color.FromArgb(58, 58, 58) : Color.FromArgb(210, 210, 210); }
         }
 
         public override Color MenuItemBorder
@@ -203,7 +203,7 @@ namespace ConvertLanguageTray
 
         public override Color MenuItemSelected
         {
-            get { return isDark ? Color.FromArgb(50, 50, 50) : Color.FromArgb(232, 232, 232); }
+            get { return isDark ? Color.FromArgb(52, 52, 52) : Color.FromArgb(232, 232, 232); }
         }
 
         public override Color ImageMarginGradientBegin
@@ -321,22 +321,26 @@ namespace ConvertLanguageTray
         private void InitializeComponent()
         {
             contextMenu = new ContextMenuStrip();
-            contextMenu.Font = new Font("Segoe UI", 9.25f);
-            contextMenu.Padding = new Padding(2, 4, 2, 4);
+            contextMenu.Font = new Font("Segoe UI", 9f);
+            contextMenu.Padding = new Padding(2, 3, 2, 3);
 
-            infoItem = new ToolStripMenuItem("แปลงภาษา: " + currentHotkey.DisplayText) { Enabled = false };
-            
+            infoItem = new ToolStripMenuItem("คีย์ลัด: " + currentHotkey.DisplayText) { Enabled = false };
+            infoItem.Padding = new Padding(6, 4, 6, 4);
+
             var changeKeyItem = new ToolStripMenuItem("ตั้งค่าคีย์ลัด (Change Hotkey)...");
+            changeKeyItem.Padding = new Padding(6, 4, 6, 4);
             changeKeyItem.Click += (s, e) => ShowHotkeyDialog();
 
             startupItem = new ToolStripMenuItem("เริ่มทำงานพร้อม Windows (Run on Startup)")
             {
                 CheckOnClick = true,
-                Checked = IsStartupEnabled()
+                Checked = IsStartupEnabled(),
+                Padding = new Padding(6, 4, 6, 4)
             };
             startupItem.Click += (s, e) => ToggleStartup();
 
             var exitItem = new ToolStripMenuItem("ออก (Exit)");
+            exitItem.Padding = new Padding(6, 4, 6, 4);
             exitItem.Click += (s, e) => Exit();
 
             contextMenu.Items.Add(infoItem);
@@ -375,7 +379,7 @@ namespace ConvertLanguageTray
                 hotkeyWindow.RegisterNumpad(currentHotkey.Modifiers);
             }
 
-            infoItem.Text = "แปลงภาษา: " + currentHotkey.DisplayText;
+            infoItem.Text = "คีย์ลัด: " + currentHotkey.DisplayText;
             trayIcon.Text = "Convert Language (" + currentHotkey.DisplayText + ")";
 
             if (!ok)
@@ -593,7 +597,7 @@ namespace ConvertLanguageTray
             bool isDark = ThemeHelper.IsDarkTheme();
 
             this.Text = "ตั้งค่าคีย์ลัด (Hotkey Settings)";
-            this.Size = new Size(380, 215);
+            this.ClientSize = new Size(346, 156);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
@@ -603,18 +607,18 @@ namespace ConvertLanguageTray
 
             var lblPrompt = new Label
             {
-                Text = "คลิกที่ช่องด้านล่าง แล้วกดคีย์ลัดที่ต้องการบนแป้นพิมพ์:",
-                Location = new Point(20, 15),
-                Size = new Size(330, 25),
-                Font = new Font("Segoe UI", 9.5f),
+                Text = "กดปุ่มคีย์ลัดที่ต้องการใช้งานบนแป้นพิมพ์:",
+                Location = new Point(16, 14),
+                Size = new Size(314, 20),
+                Font = new Font("Segoe UI", 9.25f),
                 ForeColor = isDark ? Color.FromArgb(235, 235, 235) : Color.FromArgb(30, 30, 30)
             };
 
             txtHotkey = new TextBox
             {
                 Text = currentText,
-                Location = new Point(20, 45),
-                Size = new Size(325, 30),
+                Location = new Point(16, 38),
+                Size = new Size(314, 28),
                 Font = new Font("Segoe UI", 11f, FontStyle.Bold),
                 TextAlign = HorizontalAlignment.Center,
                 ReadOnly = true,
@@ -626,14 +630,17 @@ namespace ConvertLanguageTray
 
             var lblHint = new Label
             {
-                Text = "(แนะนำให้มี Ctrl หรือ Alt ผสม เช่น Ctrl + Alt + / หรือ Ctrl + F10)",
-                Location = new Point(20, 80),
-                Size = new Size(330, 20),
-                Font = new Font("Segoe UI", 8.5f),
-                ForeColor = isDark ? Color.FromArgb(150, 150, 150) : Color.FromArgb(110, 110, 110)
+                Text = "(แนะนำผสมร่วมกับ Ctrl หรือ Alt เช่น Ctrl + Alt + /)",
+                Location = new Point(16, 72),
+                Size = new Size(314, 18),
+                Font = new Font("Segoe UI", 8.25f),
+                ForeColor = isDark ? Color.FromArgb(150, 150, 150) : Color.FromArgb(120, 120, 120)
             };
 
-            btnSave = CreateButton("บันทึก", new Point(20, 115), new Size(95, 32), isDark, true);
+            int btnY = 104;
+            int btnH = 32;
+
+            btnSave = CreateButton("บันทึก", new Point(16, btnY), new Size(94, btnH), isDark, true);
             btnSave.Click += (s, e) =>
             {
                 SelectedHotkey.Modifiers = currentMod;
@@ -641,7 +648,7 @@ namespace ConvertLanguageTray
                 SelectedHotkey.DisplayText = currentText;
             };
 
-            btnReset = CreateButton("ค่าเริ่มต้น", new Point(125, 115), new Size(90, 32), isDark, false);
+            btnReset = CreateButton("ค่าเริ่มต้น", new Point(118, btnY), new Size(100, btnH), isDark, false);
             btnReset.Click += (s, e) =>
             {
                 currentMod = HotkeySettings.DEFAULT_MOD;
@@ -650,7 +657,7 @@ namespace ConvertLanguageTray
                 txtHotkey.Text = currentText;
             };
 
-            btnCancel = CreateButton("ยกเลิก", new Point(225, 115), new Size(90, 32), isDark, false);
+            btnCancel = CreateButton("ยกเลิก", new Point(226, btnY), new Size(104, btnH), isDark, false);
             btnCancel.DialogResult = DialogResult.Cancel;
 
             this.Controls.Add(lblPrompt);
