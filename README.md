@@ -101,6 +101,15 @@ ConvertLanguageTray/
 
 ---
 
+## 👨‍💻 ผู้พัฒนา (Author & Credits)
+
+- **ผู้พัฒนา:** **Sarawut.Ms**
+- **GitHub:** [@sarawutms](https://github.com/sarawutms)
+- **Repository:** [convert-language](https://github.com/sarawutms/convert-language)
+
+---
+
 ## 📝 License
 
 โปรเจกต์นี้เปิดให้ใช้งานและแก้ไขได้อย่างอิสระภายใต้ [MIT License](LICENSE)
+Copyright © 2026 **Sarawut.Ms**. All rights reserved.

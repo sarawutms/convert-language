@@ -1,14 +1,29 @@
+// ==========================================================
+// Convert Language - Thai / English Keyboard Switcher
+// Developed by: Sarawut.Ms (https://github.com/sarawutms)
+// Copyright © 2026 Sarawut.Ms. All rights reserved.
+// ==========================================================
+
 using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+
+[assembly: AssemblyTitle("Convert Language")]
+[assembly: AssemblyDescription("Thai / English Keyboard Text Converter")]
+[assembly: AssemblyCompany("Sarawut.Ms")]
+[assembly: AssemblyProduct("Convert Language")]
+[assembly: AssemblyCopyright("Copyright © 2026 Sarawut.Ms")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
 
 namespace ConvertLanguageTray
 {
@@ -701,7 +716,7 @@ namespace ConvertLanguageTray
 
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.Text = "ตั้งค่าคีย์ลัด (Hotkey Settings)";
-            this.ClientSize = new Size(360, 170);
+            this.ClientSize = new Size(360, 185);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
@@ -742,7 +757,7 @@ namespace ConvertLanguageTray
                 ForeColor = isDark ? Color.FromArgb(160, 160, 160) : Color.FromArgb(115, 115, 115)
             };
 
-            int btnY = 114;
+            int btnY = 112;
             int btnH = 34;
 
             btnSave = CreateButton("บันทึก", new Point(18, btnY), new Size(98, btnH), isDark, true);
@@ -765,12 +780,23 @@ namespace ConvertLanguageTray
             btnCancel = CreateButton("ยกเลิก", new Point(238, btnY), new Size(104, btnH), isDark, false);
             btnCancel.DialogResult = DialogResult.Cancel;
 
+            var lblCredit = new Label
+            {
+                Text = "Convert Language • พัฒนาโดย Sarawut.Ms",
+                Location = new Point(18, 156),
+                Size = new Size(324, 18),
+                Font = new Font("Segoe UI", 7.75f),
+                TextAlign = ContentAlignment.MiddleCenter,
+                ForeColor = isDark ? Color.FromArgb(120, 120, 120) : Color.FromArgb(150, 150, 150)
+            };
+
             this.Controls.Add(lblPrompt);
             this.Controls.Add(txtHotkey);
             this.Controls.Add(lblHint);
             this.Controls.Add(btnSave);
             this.Controls.Add(btnReset);
             this.Controls.Add(btnCancel);
+            this.Controls.Add(lblCredit);
             this.AcceptButton = btnSave;
             this.CancelButton = btnCancel;
         }
