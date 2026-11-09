@@ -83,7 +83,8 @@ namespace ConvertLanguageTray
 
         public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
 
-        public static bool IsDarkTheme()
+        // ตรวจสอบธีมของระบบ Windows Taskbar / System Tray โดยตรง
+        public static bool IsSystemDarkTheme()
         {
             try
             {
@@ -91,10 +92,37 @@ namespace ConvertLanguageTray
                 {
                     if (key != null)
                     {
-                        object val = key.GetValue("AppsUseLightTheme");
-                        if (val != null)
+                        object sysVal = key.GetValue("SystemUsesLightTheme");
+                        if (sysVal != null)
                         {
-                            return (int)val == 0;
+                            return (int)sysVal == 0;
+                        }
+
+                        object appVal = key.GetValue("AppsUseLightTheme");
+                        if (appVal != null)
+                        {
+                            return (int)appVal == 0;
+                        }
+                    }
+                }
+            }
+            catch {}
+            return false;
+        }
+
+        // ตรวจสอบธีมของแอปพลิเคชัน Windows
+        public static bool IsAppDarkTheme()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    if (key != null)
+                    {
+                        object appVal = key.GetValue("AppsUseLightTheme");
+                        if (appVal != null)
+                        {
+                            return (int)appVal == 0;
                         }
                     }
                 }
@@ -396,6 +424,9 @@ namespace ConvertLanguageTray
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(exitItem);
 
+            // ตรวจสอบและเปลี่ยนธีมทันทีทุกครั้งที่ผู้ใช้คลิกขวาเปิดเมนู (100% Real-time sync กับ OS)
+            contextMenu.Opening += (s, e) => ApplyMenuTheme();
+
             ApplyMenuTheme();
 
             Icon appIcon = null;
@@ -436,9 +467,10 @@ namespace ConvertLanguageTray
 
         private void ApplyMenuTheme()
         {
-            bool isDark = ThemeHelper.IsDarkTheme();
+            bool isDark = ThemeHelper.IsSystemDarkTheme();
             contextMenu.Renderer = new ModernMenuRenderer(isDark);
             contextMenu.BackColor = isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252);
+            contextMenu.Invalidate();
         }
 
         private void RegisterCurrentHotkey()
@@ -660,12 +692,12 @@ namespace ConvertLanguageTray
         protected override void OnHandleCreated(EventArgs e)
         {
             base.OnHandleCreated(e);
-            ThemeHelper.ApplyTitleBarTheme(this.Handle, ThemeHelper.IsDarkTheme());
+            ThemeHelper.ApplyTitleBarTheme(this.Handle, ThemeHelper.IsAppDarkTheme());
         }
 
         private void InitializeUI()
         {
-            bool isDark = ThemeHelper.IsDarkTheme();
+            bool isDark = ThemeHelper.IsAppDarkTheme();
 
             this.AutoScaleMode = AutoScaleMode.Dpi;
             this.Text = "ตั้งค่าคีย์ลัด (Hotkey Settings)";
