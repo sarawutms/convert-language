@@ -428,6 +428,18 @@ namespace ConvertLanguageTray
             };
             startupItem.Click += (s, e) => ToggleStartup();
 
+            var creditItem = new ToolStripMenuItem("ผู้พัฒนา: Sarawut.Ms");
+            creditItem.Padding = new Padding(8, 5, 8, 5);
+            creditItem.ToolTipText = "คลิกเพื่อเปิด GitHub repository";
+            creditItem.Click += (s, e) =>
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("https://github.com/sarawutms/convert-language");
+                }
+                catch {}
+            };
+
             var exitItem = new ToolStripMenuItem("ออก (Exit)");
             exitItem.Padding = new Padding(8, 5, 8, 5);
             exitItem.Click += (s, e) => Exit();
@@ -436,6 +448,8 @@ namespace ConvertLanguageTray
             contextMenu.Items.Add(changeKeyItem);
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(startupItem);
+            contextMenu.Items.Add(new ToolStripSeparator());
+            contextMenu.Items.Add(creditItem);
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(exitItem);
 
