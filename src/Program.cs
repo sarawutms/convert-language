@@ -389,11 +389,24 @@ namespace ConvertLanguageTray
             ApplyMenuTheme();
 
             Icon appIcon = null;
-            try
+            string icoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+            if (File.Exists(icoPath))
             {
-                appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                try
+                {
+                    appIcon = new Icon(icoPath);
+                }
+                catch {}
             }
-            catch {}
+
+            if (appIcon == null)
+            {
+                try
+                {
+                    appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+                }
+                catch {}
+            }
 
             if (appIcon == null)
             {
@@ -408,7 +421,7 @@ namespace ConvertLanguageTray
                 Visible = true
             };
 
-            trayIcon.ShowBalloonTip(3000, "พร้อมใช้งาน!", "กดคลุมดำข้อความ แล้วกด " + currentHotkey.DisplayText + " เพื่อแปลงภาษา", ToolTipIcon.Info);
+            trayIcon.ShowBalloonTip(3000, "พร้อมใช้งาน!", "กดคลุมดำข้อความ แล้วกด " + currentHotkey.DisplayText + " เพื่อแปลงภาษา", ToolTipIcon.None);
         }
 
         private void ApplyMenuTheme()
@@ -445,7 +458,7 @@ namespace ConvertLanguageTray
                     currentHotkey = form.SelectedHotkey;
                     currentHotkey.Save();
                     RegisterCurrentHotkey();
-                    trayIcon.ShowBalloonTip(2000, "ตั้งค่าสำเร็จ", "เปลี่ยนคีย์ลัดเป็น: " + currentHotkey.DisplayText + " เรียบร้อยแล้ว", ToolTipIcon.Info);
+                    trayIcon.ShowBalloonTip(2000, "ตั้งค่าสำเร็จ", "เปลี่ยนคีย์ลัดเป็น: " + currentHotkey.DisplayText + " เรียบร้อยแล้ว", ToolTipIcon.None);
                 }
             }
         }
@@ -478,12 +491,12 @@ namespace ConvertLanguageTray
                         if (startupItem.Checked)
                         {
                             key.SetValue("ConvertLanguage", "\"" + Application.ExecutablePath + "\"");
-                            trayIcon.ShowBalloonTip(2000, "Convert Language", "ตั้งค่าให้เปิดอัตโนมัติตอนเปิดเครื่องเรียบร้อยแล้ว", ToolTipIcon.Info);
+                            trayIcon.ShowBalloonTip(2000, "Convert Language", "ตั้งค่าให้เปิดอัตโนมัติตอนเปิดเครื่องเรียบร้อยแล้ว", ToolTipIcon.None);
                         }
                         else
                         {
                             key.DeleteValue("ConvertLanguage", false);
-                            trayIcon.ShowBalloonTip(2000, "Convert Language", "ยกเลิกการเปิดอัตโนมัติตอนเปิดเครื่องแล้ว", ToolTipIcon.Info);
+                            trayIcon.ShowBalloonTip(2000, "Convert Language", "ยกเลิกการเปิดอัตโนมัติตอนเปิดเครื่องแล้ว", ToolTipIcon.None);
                         }
                     }
                 }
