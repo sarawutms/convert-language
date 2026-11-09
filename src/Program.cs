@@ -22,11 +22,21 @@ namespace ConvertLanguageTray
         [DllImport("user32.dll")]
         private static extern bool SetProcessDPIAware();
 
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern void SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string AppID);
+
         private static readonly IntPtr DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = new IntPtr(-4);
 
         [STAThread]
         static void Main()
         {
+            // ตั้งค่า Application User Model ID เพื่อให้ Windows 10/11 Action Center ดึงไอคอนแอปมาแสดงในแถบแจ้งเตือน
+            try
+            {
+                SetCurrentProcessExplicitAppUserModelID("ConvertLanguage.App");
+            }
+            catch {}
+
             // เปิดใช้งาน High-DPI Awareness เพื่อให้ตัวหนังสือคมชัด ไม่เบลอ บนจอ 1080p / 2K / 4K
             try
             {
