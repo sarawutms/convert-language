@@ -4,7 +4,20 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-font_path = r"C:\Windows\Fonts\segoeuib.ttf"
+# ใช้ฟอนต์ Tahoma Bold ซึ่งมีตัวอักษรภาษาไทย "ก" ที่สวยงาม คมชัด ถูกต้อง ไม่เพี้ยน
+def get_font_path():
+    candidates = [
+        r"C:\Windows\Fonts\tahomabd.ttf",
+        r"C:\Windows\Fonts\LeelaUIb.ttf",
+        r"C:\Windows\Fonts\tahoma.ttf",
+        r"C:\Windows\Fonts\arialbd.ttf"
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    return r"C:\Windows\Fonts\tahoma.ttf"
+
+font_path = get_font_path()
 
 def render_keycap(target_size):
     scale = 8
@@ -12,7 +25,7 @@ def render_keycap(target_size):
     img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    # Margins and dimensions
+    # ขอบและมิติของปุ่ม 3D Keycap
     pad_x = S * 0.04
     pad_top = S * 0.04
     depth = S * 0.10 if target_size >= 32 else S * 0.08
@@ -20,64 +33,65 @@ def render_keycap(target_size):
     h = S - (pad_top * 2) - depth
     radius = S * 0.18
 
-    # 1. 3D Keycap Base (Deep Navy Blue Bevel)
+    # 1. ฐานปุ่ม 3D สีน้ำเงินเข้ม (Deep Navy Bevel)
     base_box = [pad_x, pad_top + depth, pad_x + w, pad_top + depth + h]
     draw.rounded_rectangle(base_box, radius=radius, fill=(0, 48, 115, 255))
 
-    # 2. Keycap Top Face (High-contrast bright royal blue gradient)
+    # 2. หน้าปุ่มด้านบน สีฟ้าสดใสแบบ Gradient (0, 145, 255 -> 0, 90, 205)
     top_box = [pad_x, pad_top, pad_x + w, pad_top + h]
     face_img = Image.new("RGBA", (int(w), int(h)), (0, 0, 0, 0))
     f_draw = ImageDraw.Draw(face_img)
     for y in range(int(h)):
         factor = y / float(h)
-        # Vibrant gradient: (0, 145, 255) -> (0, 90, 205)
-        r = 0
         g = int(145 * (1 - factor) + 90 * factor)
         b = int(255 * (1 - factor) + 205 * factor)
-        f_draw.line([(0, y), (int(w), y)], fill=(r, g, b, 255))
+        f_draw.line([(0, y), (int(w), y)], fill=(0, g, b, 255))
 
     mask = Image.new("L", (int(w), int(h)), 0)
     m_draw = ImageDraw.Draw(mask)
     m_draw.rounded_rectangle([0, 0, int(w), int(h)], radius=radius, fill=255)
     img.paste(face_img, (int(pad_x), int(pad_top)), mask)
 
-    # 3. Top rim highlight
+    # 3. แสงสะท้อนขอบบน (Rim Highlight)
     highlight_w = max(2, int(S * 0.022))
     draw.rounded_rectangle(top_box, radius=radius, outline=(190, 235, 255, 200), width=highlight_w)
 
     center_x = pad_x + (w / 2.0)
     center_y = pad_top + (h / 2.0)
 
-    # 4. Text & Graphics
+    # 4. วาดตัวอักษรและลูกศร
     if target_size <= 24:
-        # Small tray sizes (16, 20, 24):
-        # Letters "ก" and "A" are extra bold, crystal clear, filling the height
-        font_size = int(h * 0.74)
-        font = ImageFont.truetype(font_path, font_size)
+        # ขนาดเล็กบน System Tray (16, 20, 24):
+        # ขยายตัวอักษรให้ใหญ่ชัดเจน กึ่งกลางสมมาตร ความสูงเท่ากันเป๊ะ
+        en_font_size = int(h * 0.70)
+        th_font_size = int(en_font_size * 1.28) # ขยายสัดส่วน ก ไก่ ให้ความสูงเท่ากับตัว A เป๊ะ
+
+        font_en = ImageFont.truetype(font_path, en_font_size)
+        font_th = ImageFont.truetype(font_path, th_font_size)
 
         thai_cx = pad_x + (w * 0.28)
         eng_cx  = pad_x + (w * 0.72)
 
-        # "ก" centered
-        bbox_th = font.getbbox("ก")
+        # วาด "ก" กึ่งกลางช่องซ้าย
+        bbox_th = font_th.getbbox("ก")
         th_w = bbox_th[2] - bbox_th[0]
         th_h = bbox_th[3] - bbox_th[1]
         th_x = thai_cx - (bbox_th[0] + th_w / 2.0)
         th_y = center_y - (bbox_th[1] + th_h / 2.0)
-        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font)
+        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font_th)
 
-        # "A" centered
-        bbox_en = font.getbbox("A")
+        # วาด "A" กึ่งกลางช่องขวา
+        bbox_en = font_en.getbbox("A")
         en_w = bbox_en[2] - bbox_en[0]
         en_h = bbox_en[3] - bbox_en[1]
         en_x = eng_cx - (bbox_en[0] + en_w / 2.0)
         en_y = center_y - (bbox_en[1] + en_h / 2.0)
-        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font)
+        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font_en)
 
     else:
-        # Medium and large sizes (32, 40, 48, 64, 256):
-        # Centered Arrows ⇄ with Thai "ก" on left and English "A" on right
-        arrow_half_w = w * 0.11
+        # ขนาดกลางและใหญ่ (32, 40, 48, 64, 256):
+        # ลูกศร ⇄ กึ่งกลางเป๊ะ ขนาบข้างด้วย "ก" และ "A"
+        arrow_half_w = w * 0.10
         arrow_left   = center_x - arrow_half_w
         arrow_right  = center_x + arrow_half_w
         arrow_gap_y  = h * 0.08
@@ -86,40 +100,44 @@ def render_keycap(target_size):
 
         pen_w = max(2, int(S * 0.032))
         head_s = S * 0.046
-
         arrow_color = (255, 255, 255, 255)
-        # Top arrow ->
+
+        # ลูกศรบน ->
         draw.line([(arrow_left, arrow_top_y), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
         draw.line([(arrow_right - head_s, arrow_top_y - head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
         draw.line([(arrow_right - head_s, arrow_top_y + head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
 
-        # Bottom arrow <-
+        # ลูกศรล่าง <-
         draw.line([(arrow_left, arrow_bot_y), (arrow_right, arrow_bot_y)], fill=arrow_color, width=pen_w)
         draw.line([(arrow_left + head_s, arrow_bot_y - head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
         draw.line([(arrow_left + head_s, arrow_bot_y + head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
 
-        # Compartment centers
+        # กึ่งกลางช่องซ้ายและขวา
         left_comp_cx  = (pad_x + arrow_left) / 2.0
         right_comp_cx = (arrow_right + pad_x + w) / 2.0
 
-        font_size = int(h * 0.54)
-        font = ImageFont.truetype(font_path, font_size)
+        en_font_size = int(h * 0.54)
+        th_font_size = int(en_font_size * 1.28)
 
-        bbox_th = font.getbbox("ก")
+        font_en = ImageFont.truetype(font_path, en_font_size)
+        font_th = ImageFont.truetype(font_path, th_font_size)
+
+        # "ก"
+        bbox_th = font_th.getbbox("ก")
         th_w = bbox_th[2] - bbox_th[0]
         th_h = bbox_th[3] - bbox_th[1]
         th_x = left_comp_cx - (bbox_th[0] + th_w / 2.0)
         th_y = center_y - (bbox_th[1] + th_h / 2.0)
-        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font)
+        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font_th)
 
-        bbox_en = font.getbbox("A")
+        # "A"
+        bbox_en = font_en.getbbox("A")
         en_w = bbox_en[2] - bbox_en[0]
         en_h = bbox_en[3] - bbox_en[1]
         en_x = right_comp_cx - (bbox_en[0] + en_w / 2.0)
         en_y = center_y - (bbox_en[1] + en_h / 2.0)
-        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font)
+        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font_en)
 
-    # Downscale with Lanczos filter for extreme clarity
     final_img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
     return final_img
 
@@ -182,7 +200,7 @@ def main():
         for _, data in icon_entries:
             f.write(data)
 
-    print("Crisp & Super-Sharp app.ico generated successfully with sizes:", sizes)
+    print("Authentic Thai 'ก' + 'A' app.ico generated successfully!")
 
 if __name__ == "__main__":
     main()
