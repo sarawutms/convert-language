@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -36,6 +37,188 @@ namespace ConvertLanguageTray
 
             Application.Run(new TrayApplicationContext());
             mutex.ReleaseMutex();
+        }
+    }
+
+    public static class ThemeHelper
+    {
+        [DllImport("dwmapi.dll")]
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
+
+        public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+
+        public static bool IsDarkTheme()
+        {
+            try
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    if (key != null)
+                    {
+                        object val = key.GetValue("AppsUseLightTheme");
+                        if (val != null)
+                        {
+                            return (int)val == 0;
+                        }
+                    }
+                }
+            }
+            catch {}
+            return false;
+        }
+
+        public static void ApplyTitleBarTheme(IntPtr hWnd, bool isDark)
+        {
+            try
+            {
+                int dark = isDark ? 1 : 0;
+                DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
+            }
+            catch {}
+        }
+    }
+
+    public class ModernMenuRenderer : ToolStripProfessionalRenderer
+    {
+        private bool isDark;
+
+        public ModernMenuRenderer(bool isDark) : base(new ModernColorTable(isDark))
+        {
+            this.isDark = isDark;
+        }
+
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
+        {
+            if (!e.Item.Enabled)
+            {
+                e.TextColor = isDark ? Color.FromArgb(120, 120, 120) : Color.FromArgb(145, 145, 145);
+            }
+            else
+            {
+                e.TextColor = isDark ? Color.FromArgb(240, 240, 240) : Color.FromArgb(25, 25, 25);
+            }
+            base.OnRenderItemText(e);
+        }
+
+        protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            if (e.Item.Selected && e.Item.Enabled)
+            {
+                Color hoverColor = isDark ? Color.FromArgb(50, 50, 50) : Color.FromArgb(232, 232, 232);
+                Rectangle rect = new Rectangle(3, 1, e.Item.Width - 6, e.Item.Height - 2);
+                using (var brush = new SolidBrush(hoverColor))
+                using (var path = GetRoundedRectangle(rect, 4))
+                {
+                    g.FillPath(brush, path);
+                }
+            }
+            else
+            {
+                base.OnRenderMenuItemBackground(e);
+            }
+        }
+
+        protected override void OnRenderSeparator(ToolStripSeparatorRenderEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            Color sepColor = isDark ? Color.FromArgb(55, 55, 55) : Color.FromArgb(225, 225, 225);
+            int y = e.Item.Height / 2;
+            using (var pen = new Pen(sepColor))
+            {
+                g.DrawLine(pen, 10, y, e.Item.Width - 10, y);
+            }
+        }
+
+        protected override void OnRenderItemCheck(ToolStripItemImageRenderEventArgs e)
+        {
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+
+            Rectangle rect = new Rectangle(e.ImageRectangle.X + 2, e.ImageRectangle.Y + 2, 16, 16);
+            Color checkBg = isDark ? Color.FromArgb(0, 120, 215) : Color.FromArgb(0, 103, 192);
+
+            using (var brush = new SolidBrush(checkBg))
+            using (var path = GetRoundedRectangle(rect, 3))
+            {
+                g.FillPath(brush, path);
+            }
+
+            using (var pen = new Pen(Color.White, 1.8f))
+            {
+                Point p1 = new Point(rect.X + 3, rect.Y + 8);
+                Point p2 = new Point(rect.X + 6, rect.Bottom - 4);
+                Point p3 = new Point(rect.Right - 4, rect.Y + 4);
+                g.DrawLines(pen, new Point[] { p1, p2, p3 });
+            }
+        }
+
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+            Color borderColor = isDark ? Color.FromArgb(60, 60, 60) : Color.FromArgb(210, 210, 210);
+            using (var pen = new Pen(borderColor))
+            {
+                e.Graphics.DrawRectangle(pen, 0, 0, e.ToolStrip.Width - 1, e.ToolStrip.Height - 1);
+            }
+        }
+
+        private GraphicsPath GetRoundedRectangle(Rectangle rect, int radius)
+        {
+            var path = new GraphicsPath();
+            int d = radius * 2;
+            path.AddArc(rect.X, rect.Y, d, d, 180, 90);
+            path.AddArc(rect.Right - d, rect.Y, d, d, 270, 90);
+            path.AddArc(rect.Right - d, rect.Bottom - d, d, d, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - d, d, d, 90, 90);
+            path.CloseFigure();
+            return path;
+        }
+    }
+
+    public class ModernColorTable : ProfessionalColorTable
+    {
+        private bool isDark;
+
+        public ModernColorTable(bool isDark)
+        {
+            this.isDark = isDark;
+        }
+
+        public override Color ToolStripDropDownBackground
+        {
+            get { return isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252); }
+        }
+
+        public override Color MenuBorder
+        {
+            get { return isDark ? Color.FromArgb(60, 60, 60) : Color.FromArgb(215, 215, 215); }
+        }
+
+        public override Color MenuItemBorder
+        {
+            get { return Color.Transparent; }
+        }
+
+        public override Color MenuItemSelected
+        {
+            get { return isDark ? Color.FromArgb(50, 50, 50) : Color.FromArgb(232, 232, 232); }
+        }
+
+        public override Color ImageMarginGradientBegin
+        {
+            get { return isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252); }
+        }
+
+        public override Color ImageMarginGradientMiddle
+        {
+            get { return isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252); }
+        }
+
+        public override Color ImageMarginGradientEnd
+        {
+            get { return isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252); }
         }
     }
 
@@ -128,11 +311,18 @@ namespace ConvertLanguageTray
             InitializeComponent();
             hotkeyWindow = new HotkeyWindow(OnHotkeyPressed);
             RegisterCurrentHotkey();
+
+            SystemEvents.UserPreferenceChanged += (s, e) =>
+            {
+                ApplyMenuTheme();
+            };
         }
 
         private void InitializeComponent()
         {
             contextMenu = new ContextMenuStrip();
+            contextMenu.Font = new Font("Segoe UI", 9.25f);
+            contextMenu.Padding = new Padding(2, 4, 2, 4);
 
             infoItem = new ToolStripMenuItem("แปลงภาษา: " + currentHotkey.DisplayText) { Enabled = false };
             
@@ -156,6 +346,8 @@ namespace ConvertLanguageTray
             contextMenu.Items.Add(new ToolStripSeparator());
             contextMenu.Items.Add(exitItem);
 
+            ApplyMenuTheme();
+
             trayIcon = new NotifyIcon
             {
                 Icon = SystemIcons.Application,
@@ -167,13 +359,19 @@ namespace ConvertLanguageTray
             trayIcon.ShowBalloonTip(3000, "พร้อมใช้งาน!", "กดคลุมดำข้อความ แล้วกด " + currentHotkey.DisplayText + " เพื่อแปลงภาษา", ToolTipIcon.Info);
         }
 
+        private void ApplyMenuTheme()
+        {
+            bool isDark = ThemeHelper.IsDarkTheme();
+            contextMenu.Renderer = new ModernMenuRenderer(isDark);
+            contextMenu.BackColor = isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(252, 252, 252);
+        }
+
         private void RegisterCurrentHotkey()
         {
             hotkeyWindow.Unregister();
             bool ok = hotkeyWindow.Register(currentHotkey.Modifiers, currentHotkey.VirtualKey);
             if (currentHotkey.VirtualKey == 0xBF)
             {
-                // ถ้าเป็นปุ่ม / ให้ลงทะเบียน Numpad / ด้วย
                 hotkeyWindow.RegisterNumpad(currentHotkey.Modifiers);
             }
 
@@ -384,22 +582,32 @@ namespace ConvertLanguageTray
             InitializeUI();
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            ThemeHelper.ApplyTitleBarTheme(this.Handle, ThemeHelper.IsDarkTheme());
+        }
+
         private void InitializeUI()
         {
+            bool isDark = ThemeHelper.IsDarkTheme();
+
             this.Text = "ตั้งค่าคีย์ลัด (Hotkey Settings)";
-            this.Size = new Size(380, 210);
+            this.Size = new Size(380, 215);
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.StartPosition = FormStartPosition.CenterScreen;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ShowInTaskbar = true;
+            this.BackColor = isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(248, 248, 248);
 
             var lblPrompt = new Label
             {
                 Text = "คลิกที่ช่องด้านล่าง แล้วกดคีย์ลัดที่ต้องการบนแป้นพิมพ์:",
                 Location = new Point(20, 15),
                 Size = new Size(330, 25),
-                Font = new Font("Segoe UI", 9.5f)
+                Font = new Font("Segoe UI", 9.5f),
+                ForeColor = isDark ? Color.FromArgb(235, 235, 235) : Color.FromArgb(30, 30, 30)
             };
 
             txtHotkey = new TextBox
@@ -410,7 +618,9 @@ namespace ConvertLanguageTray
                 Font = new Font("Segoe UI", 11f, FontStyle.Bold),
                 TextAlign = HorizontalAlignment.Center,
                 ReadOnly = true,
-                BackColor = Color.White
+                BackColor = isDark ? Color.FromArgb(45, 45, 45) : Color.White,
+                ForeColor = isDark ? Color.FromArgb(255, 255, 255) : Color.FromArgb(20, 20, 20),
+                BorderStyle = BorderStyle.FixedSingle
             };
             txtHotkey.KeyDown += OnHotkeyKeyDown;
 
@@ -420,16 +630,10 @@ namespace ConvertLanguageTray
                 Location = new Point(20, 80),
                 Size = new Size(330, 20),
                 Font = new Font("Segoe UI", 8.5f),
-                ForeColor = Color.Gray
+                ForeColor = isDark ? Color.FromArgb(150, 150, 150) : Color.FromArgb(110, 110, 110)
             };
 
-            btnSave = new Button
-            {
-                Text = "บันทึก (Save)",
-                Location = new Point(20, 115),
-                Size = new Size(95, 32),
-                DialogResult = DialogResult.OK
-            };
+            btnSave = CreateButton("บันทึก", new Point(20, 115), new Size(95, 32), isDark, true);
             btnSave.Click += (s, e) =>
             {
                 SelectedHotkey.Modifiers = currentMod;
@@ -437,12 +641,7 @@ namespace ConvertLanguageTray
                 SelectedHotkey.DisplayText = currentText;
             };
 
-            btnReset = new Button
-            {
-                Text = "ค่าเริ่มต้น",
-                Location = new Point(125, 115),
-                Size = new Size(90, 32)
-            };
+            btnReset = CreateButton("ค่าเริ่มต้น", new Point(125, 115), new Size(90, 32), isDark, false);
             btnReset.Click += (s, e) =>
             {
                 currentMod = HotkeySettings.DEFAULT_MOD;
@@ -451,13 +650,8 @@ namespace ConvertLanguageTray
                 txtHotkey.Text = currentText;
             };
 
-            btnCancel = new Button
-            {
-                Text = "ยกเลิก",
-                Location = new Point(225, 115),
-                Size = new Size(90, 32),
-                DialogResult = DialogResult.Cancel
-            };
+            btnCancel = CreateButton("ยกเลิก", new Point(225, 115), new Size(90, 32), isDark, false);
+            btnCancel.DialogResult = DialogResult.Cancel;
 
             this.Controls.Add(lblPrompt);
             this.Controls.Add(txtHotkey);
@@ -469,11 +663,39 @@ namespace ConvertLanguageTray
             this.CancelButton = btnCancel;
         }
 
+        private Button CreateButton(string text, Point loc, Size sz, bool isDark, bool isPrimary)
+        {
+            var btn = new Button
+            {
+                Text = text,
+                Location = loc,
+                Size = sz,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 9f),
+                Cursor = Cursors.Hand
+            };
+
+            if (isPrimary)
+            {
+                btn.BackColor = isDark ? Color.FromArgb(0, 120, 215) : Color.FromArgb(0, 103, 192);
+                btn.ForeColor = Color.White;
+                btn.FlatAppearance.BorderSize = 0;
+                btn.DialogResult = DialogResult.OK;
+            }
+            else
+            {
+                btn.BackColor = isDark ? Color.FromArgb(45, 45, 45) : Color.FromArgb(235, 235, 235);
+                btn.ForeColor = isDark ? Color.FromArgb(230, 230, 230) : Color.FromArgb(30, 30, 30);
+                btn.FlatAppearance.BorderColor = isDark ? Color.FromArgb(65, 65, 65) : Color.FromArgb(200, 200, 200);
+            }
+
+            return btn;
+        }
+
         private void OnHotkeyKeyDown(object sender, KeyEventArgs e)
         {
             e.SuppressKeyPress = true;
 
-            // ข้ามการกดเฉพาะ modifier โดดๆ
             if (e.KeyCode == Keys.ControlKey || e.KeyCode == Keys.ShiftKey || e.KeyCode == Keys.Menu)
             {
                 return;
@@ -500,7 +722,6 @@ namespace ConvertLanguageTray
 
             if (mod == 0)
             {
-                // ถ้าไม่มี modifier ให้เตือนหรือไม่ให้ใช้ (ป้องกันไปแย่งพิมพ์ตัวอักษรปกติ)
                 MessageBox.Show("กรุณากดร่วมกับปุ่ม Ctrl, Alt หรือ Shift", "แจ้งเตือน", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
