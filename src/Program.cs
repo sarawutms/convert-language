@@ -388,9 +388,21 @@ namespace ConvertLanguageTray
 
             ApplyMenuTheme();
 
+            Icon appIcon = null;
+            try
+            {
+                appIcon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            }
+            catch {}
+
+            if (appIcon == null)
+            {
+                appIcon = SystemIcons.Application;
+            }
+
             trayIcon = new NotifyIcon
             {
-                Icon = SystemIcons.Application,
+                Icon = appIcon,
                 ContextMenuStrip = contextMenu,
                 Text = "Convert Language (" + currentHotkey.DisplayText + ")",
                 Visible = true
@@ -640,6 +652,7 @@ namespace ConvertLanguageTray
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.ShowInTaskbar = true;
+            try { this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch {}
             this.BackColor = isDark ? Color.FromArgb(32, 32, 32) : Color.FromArgb(248, 248, 248);
 
             var lblPrompt = new Label
