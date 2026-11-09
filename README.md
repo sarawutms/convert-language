@@ -8,6 +8,7 @@
 
 ## ✨ ฟีเจอร์เด่น (Features)
 
+- 🤫 **เปิดใช้งานเงียบสนิท (Silent Startup):** ไม่มีหน้าต่าง Terminal / Command Prompt สีดำกระพริบขึ้นมาเลยแม้แต่วินาทีเดียว
 - ⌨️ **แปลงภาษาสลับไปมาอัตโนมัติ:** ตรวจจับสัดส่วนตัวอักษรไทย-อังกฤษในข้อความ แล้วแปลงสลับภาษาให้อัตโนมัติ
 - 🚀 **คีย์ลัด Global Hotkey:** กด `Ctrl + Alt + /` ได้จากทุกโปรแกรม ไม่ว่าจะเป็น Browser, LINE, VS Code, Microsoft Word, Notepad ฯลฯ
 - 🔢 **รองรับทั้งสองปุ่ม Slash:** รองรับทั้งปุ่ม `/` บนแป้นพิมพ์หลัก (ปุ่ม ฝ) และปุ่ม `/` บนแป้นตัวเลข (Numpad)
@@ -35,9 +36,10 @@ git clone https://github.com/sarawutms/convert-language.git
 ```
 
 ### 2. เริ่มต้นใช้งาน (รันเพียงตัวเดียวจบ)
-ดับเบิลคลิกที่ไฟล์ **`RunConvertLanguage.bat`** เพื่อเปิดใช้งานโปรแกรม
+ดับเบิลคลิกที่ไฟล์ **`RunConvertLanguage.vbs`** เพื่อเปิดใช้งานโปรแกรม
 
-- เมื่อโปรแกรมเริ่มทำงาน จะมีข้อความแจ้งเตือน (Balloon Notification) ที่มุมขวาล่างว่า **"พร้อมใช้งาน!"**
+- โปรแกรมจะเริ่มทำงานเงียบ ๆ **โดยไม่มีหน้าต่าง Terminal หรือจอดำกระพริบขึ้นมาเลย**
+- จะมีข้อความแจ้งเตือน (Balloon Notification) ที่มุมขวาล่างว่า **"พร้อมใช้งาน!"**
 - ไอคอนโปรแกรมจะปรากฏอยู่ใน **System Tray** (ข้างนาฬิกาของ Windows หรือในปุ่มลูกศร `^`)
 
 ### 3. วิธีการใช้งาน
@@ -59,7 +61,7 @@ git clone https://github.com/sarawutms/convert-language.git
 
 1. กดปุ่ม `Win + R` เพื่อเปิดหน้าต่าง Run
 2. พิมพ์ `shell:startup` แล้วกด **Enter** (โฟลเดอร์ Startup จะเปิดขึ้นมา)
-3. คลิกขวาที่ไฟล์ **`RunConvertLanguage.bat`** แล้วเลือก **Create shortcut** (สร้างทางลัด)
+3. คลิกขวาที่ไฟล์ **`RunConvertLanguage.vbs`** แล้วเลือก **Create shortcut** (สร้างทางลัด)
 4. ย้ายไฟล์ Shortcut ที่สร้างขึ้น ไปวางไว้ในโฟลเดอร์ **Startup**
 
 ---
@@ -69,7 +71,7 @@ git clone https://github.com/sarawutms/convert-language.git
 ```text
 ConvertLanguageTray/
 ├── ConvertLanguage.ps1     # สคริปต์หลักสำหรับประมวลผลแป้นพิมพ์, Hotkey และ System Tray
-├── RunConvertLanguage.bat   # สคริปต์สำหรับเปิดโปรแกรม (รันตัวนี้ตัวเดียวจบ)
+├── RunConvertLanguage.vbs  # ตัวเปิดโปรแกรมแบบเงียบสนิท (ไม่มีหน้าต่าง Terminal กระพริบ)
 └── README.md               # เอกสารแนะนำและคู่มือการใช้งาน
 ```
 
