@@ -4,5 +4,3 @@ settings.ini
 *.obj
 *.tmp
 *.zip
-__pycache__/
-*.pyc
