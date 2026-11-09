@@ -1,14 +1,29 @@
-# Convert Language 🔄 🇹🇭/ᴇɴɢ
+<div align="center">
 
-เครื่องมือแปลงภาษาข้อความ (ไทย ⇋ อังกฤษ) อัตโนมัติบน Windows เมื่อลืมสลับแป้นพิมพ์ ทำงานเงียบ ๆ อยู่บน System Tray เพียงแค่คลุมดำข้อความแล้วกดคีย์ลัด (ค่าเริ่มต้น **`Ctrl + Alt + /`**) ข้อความจะถูกแปลงเป็นอีกภาษาทันที!
+  <img src="assets/icon.png" width="128" height="128" alt="Convert Language Icon" />
 
-ดาวน์โหลดแล้วดับเบิลคลิก **`ConvertLanguage.exe`** ใช้งานได้ทันที ไม่ต้องติดตั้งโปรแกรมเพิ่มเติม (Zero Dependencies) พกพาใส่แฟลชไดรฟ์หรือแตกไฟล์ไว้ที่ไหนก็รันได้ 100%
+  # Convert Language 🔄 🇹🇭/ᴇɴɢ
+
+  **เครื่องมือแปลงภาษาข้อความ (ไทย ⇋ อังกฤษ) อัตโนมัติบน Windows เมื่อลืมสลับแป้นพิมพ์**  
+  *ทำงานเงียบ ๆ บน System Tray • แปลงข้อความทันใจใน 1 วินาที • ไม่ต้องติดตั้ง (Portable)*
+
+  [![Release](https://img.shields.io/github/v/release/sarawutms/convert-language?style=for-the-badge&color=0078D4)](https://github.com/sarawutms/convert-language/releases/latest)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+  [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%7C%2011-blue?style=for-the-badge&logo=windows)](https://github.com/sarawutms/convert-language)
+
+</div>
+
+---
+
+<div align="center">
+  <img src="assets/demo_card.png" alt="Convert Language Demo" width="840" />
+</div>
 
 ---
 
 ## ✨ ฟีเจอร์เด่น (Features)
 
-- 🎨 **ไอคอนแท้สไตล์ Windows 11 (ก ⇄ A):** ไอคอนแอปสวยงาม คมชัดทุกขนาด พร้อมแสดงบน Taskbar System Tray อย่างโดดเด่น
+- 🎨 **ไอคอน 3D Keycap สไตล์ Windows 11 (ก ⇄ A):** ไอคอนแอปคมชัดทุกขนาด (16px - 256px) พร้อมแสดงบน Taskbar System Tray อย่างโดดเด่น
 - 🌓 **ดีไซน์เมนูตาม Windows (Dark / Light Theme):** เมนู System Tray และหน้าต่างตั้งค่าปรับสีตามธีมของ Windows 10/11 อัตโนมัติ (Dark Mode สีดำเรียบหรู / Light Mode สีขาวสะอาดตา) สไตล์ Modern Flat พร้อมขอบโค้งมน
 - ⌨️ **เปลี่ยนปุ่มคีย์ลัดได้ง่าย ๆ จาก System Tray:** คลิกขวาที่ไอคอนแล้วเลือก **"ตั้งค่าคีย์ลัด (Change Hotkey)..."** กดปุ่มบนคีย์บอร์ดที่ต้องการแล้วบันทึกได้ทันที
 - ⚡ **เป็นไฟล์ `.exe` ตัวเดียวจบ (Single Executable):** รวมทุกอย่างในไฟล์เดียว ไม่ต้องพึ่งพา PowerShell หรือสคริปต์ภายนอก
@@ -22,6 +37,14 @@
 
 ---
 
+## 📸 ภาพตัวอย่างหน้าจอ (Screenshots)
+
+<div align="center">
+  <img src="assets/preview_ui.png" alt="Convert Language System Tray Menu and Hotkey Settings" width="840" />
+</div>
+
+---
+
 ## 🛠️ ความต้องการของระบบ (Requirements)
 
 - **ระบบปฏิบัติการ:** Windows 10 หรือ Windows 11 ทุกรุ่น
@@ -31,9 +54,11 @@
 
 ## 📥 วิธีเริ่มต้นใช้งาน (Getting Started)
 
-### 1. ดาวน์โหลดโปรเจกต์
-ดาวน์โหลดไฟล์ ZIP จาก GitHub แล้วแตกไฟล์ไว้ที่ใดก็ได้ในเครื่องของคุณ (เช่น `Desktop`, `Downloads`, หรือในไดรฟ์ `D:`)
+### 1. ดาวน์โหลดโปรแกรม
+- ดาวน์โหลดไฟล์ **`ConvertLanguage-v1.0.0.zip`** จากหน้า [Releases](https://github.com/sarawutms/convert-language/releases/latest)
+- แตกไฟล์ ZIP แล้วดับเบิลคลิก **`ConvertLanguage.exe`** ใช้งานได้ทันที (ไม่ต้องติดตั้ง)
 
+หรือโคลนโปรเจกต์ด้วย Git:
 ```bash
 git clone https://github.com/sarawutms/convert-language.git
 ```
@@ -79,12 +104,18 @@ git clone https://github.com/sarawutms/convert-language.git
 
 ```text
 ConvertLanguageTray/
-├── ConvertLanguage.exe     # ตัวโปรแกรมหลัก (มีไอคอนแอปฝังในตัว ดับเบิลคลิกใช้งานได้ทันที)
-├── app.ico                 # ไฟล์ไอคอนหลักของแอปพลิเคชัน (Multi-resolution 16px - 256px)
-├── build.bat               # สคริปต์คอมไพล์โปรแกรม (สำหรับผู้ที่ต้องการคอมไพล์ใหม่)
+├── assets/                     # รูปภาพตัวอย่างและไอคอนสำหรับ README
+│   ├── icon.png                # ไอคอนหลักขนาด 256x256
+│   ├── demo_card.png           # กราฟิกแสดงตัวอย่าง Before & After
+│   └── preview_ui.png          # ภาพตัวอย่างเมนู System Tray และหน้าต่างตั้งค่า
 ├── src/
-│   └── Program.cs          # ซอร์สโค้ดภาษา C# .NET
-└── README.md               # คู่มือการใช้งาน
+│   ├── Program.cs              # ซอร์สโค้ดภาษา C# .NET
+│   ├── generate_sharp_icon.py  # สคริปต์สร้าง app.ico ครบทุกขนาด
+│   └── generate_readme_assets.py # สคริปต์สร้างรูปภาพ assets
+├── ConvertLanguage.exe         # ตัวโปรแกรมหลัก (ดับเบิลคลิกใช้งานได้ทันที)
+├── app.ico                     # ไฟล์ไอคอน Multi-resolution (16px - 256px)
+├── build.bat                   # สคริปต์คอมไพล์โปรแกรม
+└── README.md                   # คู่มือการใช้งาน
 ```
 
 ---
@@ -111,5 +142,5 @@ ConvertLanguageTray/
 
 ## 📝 License
 
-โปรเจกต์นี้เปิดให้ใช้งานและแก้ไขได้อย่างอิสระภายใต้ [MIT License](LICENSE)
+โปรเจกต์นี้เปิดให้ใช้งานและแก้ไขได้อย่างอิสระภายใต้ [MIT License](LICENSE)  
 Copyright © 2026 **Sarawut.Ms**. All rights reserved.
