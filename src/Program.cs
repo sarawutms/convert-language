@@ -458,17 +458,37 @@ namespace ConvertLanguageTray
 
             ApplyMenuTheme();
 
+            Size targetSize = SystemInformation.SmallIconSize;
             Icon appIcon = null;
-            string icoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
-            if (File.Exists(icoPath))
+
+            // 1. โหลดจาก Embedded Manifest Resource ตรงตามขนาด DPI ของจอ (16x16, 20x20, 24x24, 32x32) คมชัด 1:1
+            try
             {
-                try
+                using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("ConvertLanguageTray.app.ico"))
                 {
-                    appIcon = new Icon(icoPath);
+                    if (stream != null)
+                    {
+                        appIcon = new Icon(stream, targetSize);
+                    }
                 }
-                catch {}
+            }
+            catch {}
+
+            // 2. ถ้าไม่มีใน Embedded ให้โหลดจากไฟล์ app.ico ในโฟลเดอร์เดียวกันโดยระบุ targetSize
+            if (appIcon == null)
+            {
+                string icoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "app.ico");
+                if (File.Exists(icoPath))
+                {
+                    try
+                    {
+                        appIcon = new Icon(icoPath, targetSize);
+                    }
+                    catch {}
+                }
             }
 
+            // 3. Fallback: ดึงจาก Associated Icon หรือ SystemIcons
             if (appIcon == null)
             {
                 try
