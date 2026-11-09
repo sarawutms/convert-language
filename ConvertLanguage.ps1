@@ -1,6 +1,18 @@
 ﻿Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# ป้องกันการเปิดโปรแกรมซ้ำซ้อน (Single Instance Check)
+$script:mutex = New-Object System.Threading.Mutex($false, "ConvertLanguageTray_Mutex")
+if (-not $script:mutex.WaitOne(0, $false)) {
+    [System.Windows.Forms.MessageBox]::Show(
+        "โปรแกรม Convert Language กำลังทำงานอยู่แล้วที่ System Tray (มุมขวาล่างข้างนาฬิกา)",
+        "Convert Language",
+        [System.Windows.Forms.MessageBoxButtons]::OK,
+        [System.Windows.Forms.MessageBoxIcon]::Information
+    ) | Out-Null
+    exit
+}
+
 Add-Type @'
 using System.Runtime.InteropServices;
 
@@ -43,9 +55,14 @@ function Convert-SelectedText {
     try {
         [System.Windows.Forms.Clipboard]::Clear()
         [System.Windows.Forms.SendKeys]::SendWait('^c')
-        Start-Sleep -Milliseconds 150
+        Start-Sleep -Milliseconds 120
 
         $text = [System.Windows.Forms.Clipboard]::GetText()
+        if ([string]::IsNullOrWhiteSpace($text)) {
+            Start-Sleep -Milliseconds 80
+            $text = [System.Windows.Forms.Clipboard]::GetText()
+        }
+
         if ([string]::IsNullOrWhiteSpace($text)) {
             return
         }
@@ -56,6 +73,7 @@ function Convert-SelectedText {
         $converted = Convert-KeyboardText $text ($englishCount -ge $thaiCount)
         
         [System.Windows.Forms.Clipboard]::SetText($converted)
+        Start-Sleep -Milliseconds 50
         [System.Windows.Forms.SendKeys]::SendWait('^v')
     } catch {
         [System.Windows.Forms.MessageBox]::Show(
@@ -68,7 +86,7 @@ function Convert-SelectedText {
 # ไอคอนและเมนูใน System Tray
 $script:tray = New-Object System.Windows.Forms.NotifyIcon
 $script:tray.Icon = [System.Drawing.SystemIcons]::Application
-$script:tray.Text = "แปลงภาษา: Ctrl+Alt+/"
+$script:tray.Text = "Convert Language (Ctrl+Alt+/)"
 $script:tray.Visible = $true
 
 # แสดง Pop-up แจ้งเตือนเมื่อเปิดโปรแกรม
@@ -81,24 +99,27 @@ $exitItem.Add_Click({
 })
 $script:tray.ContextMenuStrip = $menu
 
-# ตรวจจับ Ctrl+Alt+/ (ใช้รหัส 0xBF)
+# ตรวจจับ Ctrl + Alt + / (รองรับทั้งปุ่ม 0xBF แป้นหลัก และ 0x6F Numpad)
 $script:wasPressed = $false
 $timer = New-Object System.Windows.Forms.Timer
-$timer.Interval = 60
+$timer.Interval = 50
 $timer.Add_Tick({
-    $ctrl  = (([int][KeyState]::GetAsyncKeyState(0x11) -band 0x8000) -ne 0)
-    $alt   = (([int][KeyState]::GetAsyncKeyState(0x12) -band 0x8000) -ne 0)
-    $slash = (([int][KeyState]::GetAsyncKeyState(0xBF) -band 0x8000) -ne 0)
+    $ctrl   = (([int][KeyState]::GetAsyncKeyState(0x11) -band 0x8000) -ne 0)
+    $alt    = (([int][KeyState]::GetAsyncKeyState(0x12) -band 0x8000) -ne 0)
+    $slash1 = (([int][KeyState]::GetAsyncKeyState(0xBF) -band 0x8000) -ne 0) # / และ ? บนแป้นหลัก (ปุ่ม ฝ)
+    $slash2 = (([int][KeyState]::GetAsyncKeyState(0x6F) -band 0x8000) -ne 0) # / บน Numpad
 
+    $slash = $slash1 -or $slash2
     $pressed = $ctrl -and $alt -and $slash
 
     if ($pressed) {
         $script:wasPressed = $true
     }
 
-    # รอจนกว่าจะปล่อยมือจากปุ่มทั้งหมด ถึงจะเริ่มทำงาน
-    if ($script:wasPressed -and -not $ctrl -and -not $alt -and -not $slash) {
+    # เมื่อเคยกดครบ แล้วปล่อยปุ่ม Slash ให้เริ่มทำงานทันที (ไม่ต้องรอปล่อย Ctrl/Alt จนหมด)
+    if ($script:wasPressed -and -not $slash) {
         $script:wasPressed = $false
+        Start-Sleep -Milliseconds 40
         Convert-SelectedText
     }
 })
@@ -110,3 +131,7 @@ $timer.Dispose()
 $script:tray.Visible = $false
 $script:tray.Dispose()
 $menu.Dispose()
+if ($script:mutex) {
+    $script:mutex.ReleaseMutex()
+    $script:mutex.Dispose()
+}
