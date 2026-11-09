@@ -4,7 +4,6 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 
-# ใช้ฟอนต์ Tahoma Bold ซึ่งมีตัวอักษรภาษาไทย "ก" ที่สวยงาม คมชัด ถูกต้อง ไม่เพี้ยน
 def get_font_path():
     candidates = [
         r"C:\Windows\Fonts\tahomabd.ttf",
@@ -26,12 +25,12 @@ def render_keycap(target_size):
     draw = ImageDraw.Draw(img)
 
     # ขอบและมิติของปุ่ม 3D Keycap
-    pad_x = S * 0.04
-    pad_top = S * 0.04
-    depth = S * 0.10 if target_size >= 32 else S * 0.08
+    pad_x = S * 0.03
+    pad_top = S * 0.03
+    depth = S * 0.09
     w = S - (pad_x * 2)
     h = S - (pad_top * 2) - depth
-    radius = S * 0.18
+    radius = S * 0.16
 
     # 1. ฐานปุ่ม 3D สีน้ำเงินเข้ม (Deep Navy Bevel)
     base_box = [pad_x, pad_top + depth, pad_x + w, pad_top + depth + h]
@@ -53,90 +52,58 @@ def render_keycap(target_size):
     img.paste(face_img, (int(pad_x), int(pad_top)), mask)
 
     # 3. แสงสะท้อนขอบบน (Rim Highlight)
-    highlight_w = max(2, int(S * 0.022))
-    draw.rounded_rectangle(top_box, radius=radius, outline=(190, 235, 255, 200), width=highlight_w)
+    draw.rounded_rectangle(top_box, radius=radius, outline=(190, 235, 255, 200), width=max(2, int(S * 0.02)))
 
     center_x = pad_x + (w / 2.0)
     center_y = pad_top + (h / 2.0)
 
-    # 4. วาดตัวอักษรและลูกศร
-    if target_size <= 24:
-        # ขนาดเล็กบน System Tray (16, 20, 24):
-        # ขยายตัวอักษรให้ใหญ่ชัดเจน กึ่งกลางสมมาตร ความสูงเท่ากันเป๊ะ
-        en_font_size = int(h * 0.70)
-        th_font_size = int(en_font_size * 1.28) # ขยายสัดส่วน ก ไก่ ให้ความสูงเท่ากับตัว A เป๊ะ
+    # 4. ลูกศรสลับภาษา ⇄ อยู่ตรงกึ่งกลางเสมอ (รวมถึงขนาด Tray 16, 20, 24 ด้วย)
+    arrow_half_w = w * 0.10
+    arrow_left   = center_x - arrow_half_w
+    arrow_right  = center_x + arrow_half_w
+    arrow_gap_y  = h * 0.085
+    arrow_top_y  = center_y - arrow_gap_y
+    arrow_bot_y  = center_y + arrow_gap_y
 
-        font_en = ImageFont.truetype(font_path, en_font_size)
-        font_th = ImageFont.truetype(font_path, th_font_size)
+    pen_w = max(2, int(S * 0.035))
+    head_s = S * 0.048
+    arrow_color = (255, 255, 255, 255)
 
-        thai_cx = pad_x + (w * 0.28)
-        eng_cx  = pad_x + (w * 0.72)
+    # ลูกศรบน ชี้ขวา ➔
+    draw.line([(arrow_left, arrow_top_y), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
+    draw.line([(arrow_right - head_s, arrow_top_y - head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
+    draw.line([(arrow_right - head_s, arrow_top_y + head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
 
-        # วาด "ก" กึ่งกลางช่องซ้าย
-        bbox_th = font_th.getbbox("ก")
-        th_w = bbox_th[2] - bbox_th[0]
-        th_h = bbox_th[3] - bbox_th[1]
-        th_x = thai_cx - (bbox_th[0] + th_w / 2.0)
-        th_y = center_y - (bbox_th[1] + th_h / 2.0)
-        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font_th)
+    # ลูกศรล่าง ชี้ซ้าย ⬅
+    draw.line([(arrow_left, arrow_bot_y), (arrow_right, arrow_bot_y)], fill=arrow_color, width=pen_w)
+    draw.line([(arrow_left + head_s, arrow_bot_y - head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
+    draw.line([(arrow_left + head_s, arrow_bot_y + head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
 
-        # วาด "A" กึ่งกลางช่องขวา
-        bbox_en = font_en.getbbox("A")
-        en_w = bbox_en[2] - bbox_en[0]
-        en_h = bbox_en[3] - bbox_en[1]
-        en_x = eng_cx - (bbox_en[0] + en_w / 2.0)
-        en_y = center_y - (bbox_en[1] + en_h / 2.0)
-        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font_en)
+    # 5. กึ่งกลางช่องซ้าย ("ก") และช่องขวา ("A")
+    left_comp_cx  = (pad_x + arrow_left) / 2.0
+    right_comp_cx = (arrow_right + pad_x + w) / 2.0
 
-    else:
-        # ขนาดกลางและใหญ่ (32, 40, 48, 64, 256):
-        # ลูกศร ⇄ กึ่งกลางเป๊ะ ขนาบข้างด้วย "ก" และ "A"
-        arrow_half_w = w * 0.10
-        arrow_left   = center_x - arrow_half_w
-        arrow_right  = center_x + arrow_half_w
-        arrow_gap_y  = h * 0.08
-        arrow_top_y  = center_y - arrow_gap_y
-        arrow_bot_y  = center_y + arrow_gap_y
+    en_font_size = int(h * 0.58)
+    th_font_size = int(en_font_size * 1.25) # ปรับสัดส่วนให้ ก ไก่ และ A มีความสูงเท่ากันเป๊ะ
 
-        pen_w = max(2, int(S * 0.032))
-        head_s = S * 0.046
-        arrow_color = (255, 255, 255, 255)
+    font_en = ImageFont.truetype(font_path, en_font_size)
+    font_th = ImageFont.truetype(font_path, th_font_size)
 
-        # ลูกศรบน ->
-        draw.line([(arrow_left, arrow_top_y), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
-        draw.line([(arrow_right - head_s, arrow_top_y - head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
-        draw.line([(arrow_right - head_s, arrow_top_y + head_s * 0.85), (arrow_right, arrow_top_y)], fill=arrow_color, width=pen_w)
+    # วาด "ก"
+    bbox_th = font_th.getbbox("ก")
+    th_w = bbox_th[2] - bbox_th[0]
+    th_h = bbox_th[3] - bbox_th[1]
+    th_x = left_comp_cx - (bbox_th[0] + th_w / 2.0)
+    th_y = center_y - (bbox_th[1] + th_h / 2.0)
+    draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font_th)
 
-        # ลูกศรล่าง <-
-        draw.line([(arrow_left, arrow_bot_y), (arrow_right, arrow_bot_y)], fill=arrow_color, width=pen_w)
-        draw.line([(arrow_left + head_s, arrow_bot_y - head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
-        draw.line([(arrow_left + head_s, arrow_bot_y + head_s * 0.85), (arrow_left, arrow_bot_y)], fill=arrow_color, width=pen_w)
-
-        # กึ่งกลางช่องซ้ายและขวา
-        left_comp_cx  = (pad_x + arrow_left) / 2.0
-        right_comp_cx = (arrow_right + pad_x + w) / 2.0
-
-        en_font_size = int(h * 0.54)
-        th_font_size = int(en_font_size * 1.28)
-
-        font_en = ImageFont.truetype(font_path, en_font_size)
-        font_th = ImageFont.truetype(font_path, th_font_size)
-
-        # "ก"
-        bbox_th = font_th.getbbox("ก")
-        th_w = bbox_th[2] - bbox_th[0]
-        th_h = bbox_th[3] - bbox_th[1]
-        th_x = left_comp_cx - (bbox_th[0] + th_w / 2.0)
-        th_y = center_y - (bbox_th[1] + th_h / 2.0)
-        draw.text((th_x, th_y), "ก", fill=(255, 255, 255, 255), font=font_th)
-
-        # "A"
-        bbox_en = font_en.getbbox("A")
-        en_w = bbox_en[2] - bbox_en[0]
-        en_h = bbox_en[3] - bbox_en[1]
-        en_x = right_comp_cx - (bbox_en[0] + en_w / 2.0)
-        en_y = center_y - (bbox_en[1] + en_h / 2.0)
-        draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font_en)
+    # วาด "A"
+    bbox_en = font_en.getbbox("A")
+    en_w = bbox_en[2] - bbox_en[0]
+    en_h = bbox_en[3] - bbox_en[1]
+    en_x = right_comp_cx - (bbox_en[0] + en_w / 2.0)
+    en_y = center_y - (bbox_en[1] + en_h / 2.0)
+    draw.text((en_x, en_y), "A", fill=(255, 255, 255, 255), font=font_en)
 
     final_img = img.resize((target_size, target_size), Image.Resampling.LANCZOS)
     return final_img
@@ -172,11 +139,6 @@ def main():
     for s in sizes:
         images[s] = render_keycap(s)
 
-    os.makedirs("preview", exist_ok=True)
-    images[256].save("preview/style5_3d_keycap.png", "PNG")
-    for s in [16, 20, 24, 32, 48, 64]:
-        images[s].save(f"preview/keycap_{s}.png", "PNG")
-
     icon_entries = []
     for s in sizes:
         img = images[s]
@@ -200,7 +162,7 @@ def main():
         for _, data in icon_entries:
             f.write(data)
 
-    print("Authentic Thai 'ก' + 'A' app.ico generated successfully!")
+    print("Complete 'ก ⇄ A' icon with centered arrows generated for all sizes:", sizes)
 
 if __name__ == "__main__":
     main()
