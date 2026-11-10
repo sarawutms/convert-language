@@ -96,9 +96,9 @@
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> **✅ ยืนยันความปลอดภัย 100% (VirusTotal Verified):**
-> - **ไฟล์ ZIP:** สะอาดสมบูรณ์ 100% ไม่มีค่ายใดตรวจพบสิ่งผิดปกติ ([ดูผลตรวจ VirusTotal ZIP](https://www.virustotal.com/gui/file/0092fadb5cfed289b70820a9ba226061cddf60a2cdfc744aa3232c2ff34f4d02))
-> - **ไฟล์ EXE:** ผ่านการตรวจสอบจากค่ายแอนตี้ไวรัสระดับโลก 68/71 ค่าย ([ดูผลตรวจ VirusTotal EXE](https://www.virustotal.com/gui/file/097f7bf2fe7baafb1b847b440d86d4068f6c057218cc6dc798c41add97b1fd8d?nocache=1)) ยืนยันปลอดภัยโดย Microsoft Defender, Kaspersky, Bitdefender, ESET, Sophos ฯลฯ
+> **✅ ยืนยันความปลอดภัย (VirusTotal Verified):**
+> - **ไฟล์ ZIP (แนะนำ):** สะอาดสมบูรณ์ 100% ไม่มีค่ายใดตรวจพบสิ่งผิดปกติ ([ดูผลตรวจ VirusTotal ZIP](https://www.virustotal.com/gui/file/0092fadb5cfed289b70820a9ba226061cddf60a2cdfc744aa3232c2ff34f4d02))
+> - **ไฟล์ EXE:** ค่ายยักษ์ใหญ่ระดับโลก (Microsoft Defender, Kaspersky, Bitdefender, ESET, Sophos ฯลฯ) ยืนยันว่าปลอดภัยทั้งหมด ([ดูผลตรวจ VirusTotal EXE](https://www.virustotal.com/gui/file/097f7bf2fe7baafb1b847b440d86d4068f6c057218cc6dc798c41add97b1fd8d?nocache=1)) โดยมีเพียง 3 ค่ายที่เป็นระบบ AI (Machine Learning / Heuristic) แจ้งเตือนเนื่องจากเป็นไฟล์ใหม่ที่ยังไม่มีประวัติชื่อเสียงในระบบ
 > - **Open Source:** ซอร์สโค้ดเปิดเผยทั้งหมด สามารถตรวจสอบได้ใน Repository นี้
 > - **Offline 100%:** ไม่มีการเชื่อมต่อเครือข่ายอินเทอร์เน็ต และไม่มีการส่งข้อมูลใด ๆ ออกนอกเครื่องของผู้ใช้
 
