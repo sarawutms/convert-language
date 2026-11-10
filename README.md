@@ -31,12 +31,10 @@
 
 ## 📥 วิธีเริ่มต้นใช้งาน (Getting Started)
 
-### 1. ดาวน์โหลดโปรเจกต์
-ดาวน์โหลดไฟล์ ZIP จาก GitHub แล้วแตกไฟล์ไว้ที่ใดก็ได้ในเครื่องของคุณ (เช่น `Desktop`, `Downloads`, หรือในไดรฟ์ `D:`)
+### 1. ดาวน์โหลดโปรแกรม
+ดาวน์โหลดไฟล์ ZIP เวอร์ชันล่าสุดได้จาก [GitHub Releases](https://github.com/sarawutms/convert-language/releases/latest) แล้วแตกไฟล์ไว้ที่ใดก็ได้ในเครื่อง (เช่น `Desktop`, `Downloads` หรือ `C:\Tools`)
 
-```bash
-git clone https://github.com/sarawutms/convert-language.git
-```
+*(หรือหากเป็นนักพัฒนา สามารถ clone repo ได้ด้วย `git clone https://github.com/sarawutms/convert-language.git`)*
 
 ### 2. เริ่มต้นใช้งาน
 ดับเบิลคลิกที่ไฟล์ **`ConvertLanguage.exe`** ได้ทันที
@@ -77,17 +75,32 @@ git clone https://github.com/sarawutms/convert-language.git
 
 ## 🛡️ ความปลอดภัยและการติดตั้ง (Security & SmartScreen)
 
-เนื่องจากโปรแกรมนี้เป็น **Open Source แจกฟรี** และไม่ได้ซื้อใบรับรองดิจิทัลเชิงพาณิชย์ (Code Signing Certificate ที่มีค่าบริการรายปีสูง) เมื่อดาวน์โหลดไปเปิดครั้งแรกบน Windows 10/11 อาจพบข้อความแจ้งเตือน:
+เนื่องจากโปรแกรมนี้เป็น **Open Source แจกฟรี** และไม่ได้ซื้อใบรับรองดิจิทัลเชิงพาณิชย์ (Code Signing Certificate ที่มีค่าบริการรายปีสูง) เมื่อดาวน์โหลดไฟล์ไปเปิดครั้งแรกบน Windows 10/11 ระบบ SmartScreen อาจขึ้นหน้าต่างเตือน:
 
-### หากพบหน้าต่างสีฟ้า "Windows protected your PC" (SmartScreen):
-1. คลิกที่ปุ่มข้อความ **"More info" (ข้อมูลเพิ่มเติม)**
-2. คลิกปุ่ม **"Run anyway" (ทำงานต่อไป)**
-3. โปรแกรมจะเริ่มทำงานทันทีโดยไม่มีการแจ้งเตือนซ้ำอีก
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│ Windows protected your PC                                       │
+│ Microsoft Defender SmartScreen prevented an unrecognized app... │
+│                                                                 │
+│ [ More info ]  <─── 1. คลิกที่นี่                                 │
+│                                                                 │
+│                                         [ Don't run ]           │
+└─────────────────────────────────────────────────────────────────┘
+                                 ▼
+┌─────────────────────────────────────────────────────────────────┐
+│ App:  ConvertLanguage.exe                                       │
+│ Publisher: Unknown publisher                                    │
+│                                                                 │
+│ [ Run anyway ] <─── 2. กดปุ่มนี้เพื่อเปิดใช้งาน                     │
+│                                         [ Don't run ]           │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-> **✅ ปลอดภัย 100% ตรวจสอบได้:**
-> - ซอร์สโค้ดเปิดเผยทั้งหมด สามารถตรวจสอบได้ใน Repository นี้
-> - สแกนผ่าน VirusTotal ตรวจผ่านค่ายแอนตี้ไวรัสระดับโลก 68/71 ค่าย ([ดูผลตรวจ VirusTotal ที่นี่](https://www.virustotal.com/gui/file/097f7bf2fe7baafb1b847b440d86d4068f6c057218cc6dc798c41add97b1fd8d)) ยืนยันปลอดภัยโดย Microsoft Defender, Kaspersky, Bitdefender, ESET, Sophos ฯลฯ
-> - ไม่มีการเชื่อมต่ออินเทอร์เน็ตส่งข้อมูลใด ๆ ออกภายนอก (ทำงาน Offline ในเครื่อง 100%)
+> **✅ ยืนยันความปลอดภัย 100% (VirusTotal Verified):**
+> - **ไฟล์ ZIP:** สะอาดสมบูรณ์ 100% ไม่มีค่ายใดตรวจพบสิ่งผิดปกติ ([ดูผลตรวจ VirusTotal ZIP](https://www.virustotal.com/gui/file/0092fadb5cfed289b70820a9ba226061cddf60a2cdfc744aa3232c2ff34f4d02))
+> - **ไฟล์ EXE:** ผ่านการตรวจสอบจากค่ายแอนตี้ไวรัสระดับโลก 68/71 ค่าย ([ดูผลตรวจ VirusTotal EXE](https://www.virustotal.com/gui/file/097f7bf2fe7baafb1b847b440d86d4068f6c057218cc6dc798c41add97b1fd8d?nocache=1)) ยืนยันปลอดภัยโดย Microsoft Defender, Kaspersky, Bitdefender, ESET, Sophos ฯลฯ
+> - **Open Source:** ซอร์สโค้ดเปิดเผยทั้งหมด สามารถตรวจสอบได้ใน Repository นี้
+> - **Offline 100%:** ไม่มีการเชื่อมต่อเครือข่ายอินเทอร์เน็ต และไม่มีการส่งข้อมูลใด ๆ ออกนอกเครื่องของผู้ใช้
 
 ---
 
