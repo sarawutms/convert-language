@@ -22,8 +22,12 @@ using Microsoft.Win32;
 [assembly: AssemblyCompany("Sarawut.Ms")]
 [assembly: AssemblyProduct("Convert Language")]
 [assembly: AssemblyCopyright("Copyright © 2026 Sarawut.Ms")]
+[assembly: AssemblyTrademark("Convert Language")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: ComVisible(false)]
+[assembly: Guid("8d5f3c9e-5b2e-4b94-b20f-b3a16d821430")]
+[assembly: System.Resources.NeutralResourcesLanguage("th-TH")]
 
 namespace ConvertLanguageTray
 {

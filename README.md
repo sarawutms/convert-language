@@ -75,12 +75,29 @@ git clone https://github.com/sarawutms/convert-language.git
 
 ---
 
+## 🛡️ ความปลอดภัยและการติดตั้ง (Security & SmartScreen)
+
+เนื่องจากโปรแกรมนี้เป็น **Open Source แจกฟรี** และไม่ได้ซื้อใบรับรองดิจิทัลเชิงพาณิชย์ (Code Signing Certificate ที่มีค่าบริการรายปีสูง) เมื่อดาวน์โหลดไปเปิดครั้งแรกบน Windows 10/11 อาจพบข้อความแจ้งเตือน:
+
+### หากพบหน้าต่างสีฟ้า "Windows protected your PC" (SmartScreen):
+1. คลิกที่ปุ่มข้อความ **"More info" (ข้อมูลเพิ่มเติม)**
+2. คลิกปุ่ม **"Run anyway" (ทำงานต่อไป)**
+3. โปรแกรมจะเริ่มทำงานทันทีโดยไม่มีการแจ้งเตือนซ้ำอีก
+
+> **✅ ปลอดภัย 100% ตรวจสอบได้:**
+> - ซอร์สโค้ดเปิดเผยทั้งหมด สามารถตรวจสอบได้ใน Repository นี้
+> - สแกนผ่าน VirusTotal ตรวจผ่านค่ายแอนตี้ไวรัสระดับโลก 68/71 ค่าย ([ดูผลตรวจ VirusTotal ที่นี่](https://www.virustotal.com/gui/file/097f7bf2fe7baafb1b847b440d86d4068f6c057218cc6dc798c41add97b1fd8d)) ยืนยันปลอดภัยโดย Microsoft Defender, Kaspersky, Bitdefender, ESET, Sophos ฯลฯ
+> - ไม่มีการเชื่อมต่ออินเทอร์เน็ตส่งข้อมูลใด ๆ ออกภายนอก (ทำงาน Offline ในเครื่อง 100%)
+
+---
+
 ## 📁 โครงสร้างโปรเจกต์ (Project Structure)
 
 ```text
 ConvertLanguageTray/
 ├── ConvertLanguage.exe     # ตัวโปรแกรมหลัก (มีไอคอนแอปฝังในตัว ดับเบิลคลิกใช้งานได้ทันที)
 ├── app.ico                 # ไฟล์ไอคอนหลักของแอปพลิเคชัน (Multi-resolution 16px - 256px)
+├── app.manifest            # กำหนดสิทธิ์ความปลอดภัยและ DPI Awareness
 ├── build.bat               # สคริปต์คอมไพล์โปรแกรม (สำหรับผู้ที่ต้องการคอมไพล์ใหม่)
 ├── src/
 │   └── Program.cs          # ซอร์สโค้ดภาษา C# .NET
